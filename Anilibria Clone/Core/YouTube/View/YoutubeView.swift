@@ -19,7 +19,7 @@ struct YoutubeView: View {
                     ForEach(viewModel.videos) { video in
                         YoutubeCard(youtube: video)
                             .onAppear {
-                                if video.id == viewModel.videos.last?.id {
+                                if viewModel.status != .loading && video.id == viewModel.videos.last?.id {
                                     viewModel.fetchVideos()
                                 }
                             }
@@ -28,7 +28,8 @@ struct YoutubeView: View {
                     
                     if viewModel.status == .loading {
                         ProgressView()
-                            .padding(.bottom)
+                            .frame(height: 40)
+                            .padding(.bottom, 30)
                     }
                 }
             }

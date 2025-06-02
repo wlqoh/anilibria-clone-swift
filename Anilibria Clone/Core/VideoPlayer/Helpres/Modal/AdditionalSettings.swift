@@ -72,7 +72,7 @@ struct AdditionalSettings: View {
                                 self.vm.selectedQuality = quality
                                 vm.changeQuality(hls: hls)
                             }
-                            withAnimation {
+                            withAnimation(.easeInOut(duration: 0.3)) {
                                 showSettings = false
                             }
                         } label: {

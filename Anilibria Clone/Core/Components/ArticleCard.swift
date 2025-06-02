@@ -33,7 +33,8 @@ struct ArticleCard: View {
                     .layoutPriority(1)
             }
             .padding(.vertical, 5)
-            .padding(.trailing)
+            
+            Spacer()
         }
         .background(
             RoundedRectangle(cornerRadius: 6)

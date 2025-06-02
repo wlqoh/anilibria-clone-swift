@@ -27,7 +27,7 @@ struct SearchView: View {
                             } label: {
                                 ArticleCard(article: article)
                                     .onAppear {
-                                        if article.id == viewModel.articles.last?.id {
+                                        if viewModel.status != .loading && article.id == viewModel.articles.last?.id {
                                             viewModel.fetchArticles()
                                         }
                                     }
@@ -37,7 +37,8 @@ struct SearchView: View {
                         
                         if viewModel.status == .loading {
                             ProgressView()
-                                .padding(.bottom)
+                                .frame(height: 40)
+                                .padding(.bottom, 30)
                         }
                     }
                     .padding(.horizontal)

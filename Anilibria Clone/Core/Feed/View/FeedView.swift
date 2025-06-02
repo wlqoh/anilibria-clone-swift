@@ -21,13 +21,7 @@ struct FeedView: View {
                     }
                 })
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 20) {
-//                        Text("Ожидается сегодня")
-//                            .font(.headline)
-//                            .fontWeight(.bold)
-//                        
-//                        ExpectedTodayView(viewModel: scheduleToday)
-                        
+                    LazyVStack(spacing: 20) {
                         NavigationLink{
                             ScheduleView()
                         } label: {
@@ -45,28 +39,30 @@ struct FeedView: View {
                         }
                         
                         Text("Обновления")
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .font(.headline)
                             .fontWeight(.bold)
                             .padding(.bottom, -10)
                         
-                            ForEach(viewModel.articles) { article in
-                                NavigationLink {
-                                    DetailView(article: article)
-                                } label: {
-                                    ArticleCard(article: article)
-                                        .onAppear {
-                                            if article.id == viewModel.articles.last?.id {
-                                                viewModel.fetchArticles()
-                                            }
+                        ForEach(viewModel.articles) { article in
+                            NavigationLink {
+                                DetailView(article: article)
+                            } label: {
+                                ArticleCard(article: article)
+                                    .onAppear {
+                                        if viewModel.status != .loading && article.id == viewModel.articles.last?.id {
+                                            viewModel.fetchArticles()
                                         }
-                                }
-                                .buttonStyle(.plain)
-                                
+                                    }
                             }
-                            if viewModel.status == .loading {
+                            .buttonStyle(.plain)
+                            
+                        }
+                        if viewModel.status == .loading {
                                 ProgressView()
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                            }
+                                .frame(height: 40)
+                                .padding(.bottom, 30)
+                        }
                     }
                     .padding(.horizontal)
                 }

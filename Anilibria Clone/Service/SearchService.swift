@@ -9,7 +9,7 @@ import Foundation
 
 class SearchService: BaseService {
     
-    func searchfs(text: String,completion: @escaping (Result<Welcome, Error>) -> Void) {
+    func searchfs(text: String, completion: @escaping (Result<Welcome, Error>) -> Void) {
         let url = "title/search?search=\(text)"
         fetchData(url, responseType: Welcome.self, completion: completion)
     }

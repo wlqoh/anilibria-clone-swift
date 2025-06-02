@@ -23,13 +23,16 @@ class YoutubeViewModel: ObservableObject {
     }
     
     func fetchVideos() {
+        guard status != .loading else { return }
         status = .loading
         self.page += 1
         service.fetchYoutube(page: page) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let videos):
-                    self.videos.append(contentsOf: videos.list)
+                    let existingIDs = Set(self.videos.map(\.id))
+                    let filtered = videos.list.filter { !existingIDs.contains($0.id) }
+                    self.videos.append(contentsOf: filtered)
                     self.status = .loaded
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription

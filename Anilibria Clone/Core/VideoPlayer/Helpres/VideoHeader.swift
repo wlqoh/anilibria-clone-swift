@@ -15,6 +15,7 @@ struct VideoHeader: View {
             Text(name)
                 .font(.subheadline)
                 .fontWeight(.bold)
+                .lineLimit(2)
             
             Spacer()
             

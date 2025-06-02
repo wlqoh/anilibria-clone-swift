@@ -38,7 +38,7 @@ struct VideoProgress: View {
             }
             
             Button {
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.3)) {
                     onPressed()
                 }
             } label: {

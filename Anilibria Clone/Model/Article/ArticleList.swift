@@ -12,7 +12,7 @@ struct ArticleList: Codable {
     let name, uuid: String?
     let createdTimestamp: Int?
     let preview: String?
-    let skips: Skips?
+    let skips: Skips
     let hls: HLS?
     
     enum CodingKeys: String, CodingKey {
@@ -44,6 +44,6 @@ struct HLS: Codable {
 
 // MARK: - Skips
 struct Skips: Codable {
-    let opening: [Int?]?
-    let ending: [Int?]?
+    let opening: [Int]
+    let ending: [Int]
 }

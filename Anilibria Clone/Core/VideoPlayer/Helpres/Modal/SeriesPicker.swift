@@ -42,7 +42,7 @@ struct SeriesPicker: View {
                         selected = key
                         action()
                     }
-                    withAnimation {
+                    withAnimation(.easeInOut(duration: 0.3)) {
                         showModal = false
                     }
                 }
