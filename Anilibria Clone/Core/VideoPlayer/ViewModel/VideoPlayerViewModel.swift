@@ -13,7 +13,6 @@ class VideoPlayerViewModel: ObservableObject {
     
     @Published var showPlayerControls: Bool = true
     @Published var isPlaying: Bool = false
-    @Published var timeoutTask: DispatchWorkItem?
     @Published var isFinishedPlaying: Bool = false
     @Published var isSeeking: Bool = false
     @Published var progress: CGFloat = 0
@@ -21,22 +20,6 @@ class VideoPlayerViewModel: ObservableObject {
     @Published var selectedVideo: String = "1"
     @Published var isAllowedToSkip: Bool = false
     @Published var selectedQuality: VideoQuality?
-    
-    func timeoutControls() {
-        if let timeoutTask {
-            timeoutTask.cancel()
-        }
-        
-        timeoutTask = .init(block: {
-            withAnimation(.easeInOut(duration: 0.35)) {
-                self.showPlayerControls = false
-            }
-        })
-        
-        if let timeoutTask{
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: timeoutTask)
-        }
-    }
     
     func updatePlayer(key: String, list: [String: ArticleList]) {
         refreshPlayer()

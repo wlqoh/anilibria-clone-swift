@@ -151,10 +151,6 @@ struct VideoPlayerView: View {
             withAnimation(.easeInOut(duration: 0.35)) {
                 vm.showPlayerControls.toggle()
             }
-            
-            if vm.isPlaying {
-                vm.timeoutControls()
-            }
         }
         .preferredColorScheme(.dark)
     }

@@ -38,12 +38,8 @@ struct PlaybackControls: View {
                     if vm.isPlaying {
                         vm.player?.pause()
                         
-                        if let timeoutTask = vm.timeoutTask {
-                            timeoutTask.cancel()
-                        }
                     } else {
                         vm.player?.play()
-                        vm.timeoutControls()
                     }
                     
                     withAnimation(.easeInOut(duration: 0.2)) {

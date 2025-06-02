@@ -37,11 +37,6 @@ struct VideoSeekerView: View {
                                 out = true
                             })
                             .onChanged({ value in
-                                
-                                if let timeoutTask = vm.timeoutTask{
-                                    timeoutTask.cancel()
-                                }
-                                
                                 let translationX: CGFloat = value.translation.width
                                 let calculatedProgress = (translationX / seekerWidth) + vm.lastDraggedProgress
                                 
@@ -56,10 +51,6 @@ struct VideoSeekerView: View {
                                     let totalDuration = currentPlayerItem.duration.seconds
                                     
                                     vm.player?.seek(to: .init(seconds: totalDuration * vm.progress, preferredTimescale: 1))
-                                    
-                                    if vm.isPlaying {
-                                        vm.timeoutControls()
-                                    }
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                         vm.isSeeking = false
