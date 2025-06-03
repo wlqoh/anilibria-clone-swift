@@ -16,10 +16,11 @@ class VideoPlayerViewModel: ObservableObject {
     @Published var isFinishedPlaying: Bool = false
     @Published var isSeeking: Bool = false
     @Published var progress: CGFloat = 0
-    @Published var lastDraggedProgress: CGFloat = 0
     @Published var selectedVideo: String = "1"
     @Published var isAllowedToSkip: Bool = false
     @Published var selectedQuality: VideoQuality?
+    
+    private var observer: NSKeyValueObservation?
     
     func updatePlayer(key: String, list: [String: ArticleList]) {
         refreshPlayer()
@@ -41,16 +42,13 @@ class VideoPlayerViewModel: ObservableObject {
         
         let newItem = AVPlayerItem(url: bundle)
         player.replaceCurrentItem(with: newItem)
-        var observer: NSKeyValueObservation?
         
-        // Наблюдаем за статусом нового элемента
-        observer = newItem.observe(\.status, options: [.new, .initial]) { item, _ in
+        observer = newItem.observe(\.status, options: [.new, .initial]) { [weak self] item, _ in
+            guard let self = self else { return }
             if item.status == .readyToPlay {
                 item.seek(to: CMTime(seconds: seconds, preferredTimescale: 600), toleranceBefore: .zero, toleranceAfter: .positiveInfinity) { _ in
-                    print("Seek completed")
-                    print(seconds)
-                    // Удаляем наблюдателя после завершения
-                    observer?.invalidate()
+                    self.observer?.invalidate()
+                    self.observer = nil
                 }
             }
         }
@@ -63,14 +61,15 @@ class VideoPlayerViewModel: ObservableObject {
         }
     }
     
-    func setupTimeObserver(skips: Skips?) {
+    func setupTimeObserver(list: [String: ArticleList]) {
         player?.addPeriodicTimeObserver(forInterval: .init(seconds: 1, preferredTimescale: 1), queue: .main, using: { time in
             if let currentPlayerItem = self.player?.currentItem {
                 let totalDuration = currentPlayerItem.duration.seconds
                 let currentTime = self.player?.currentTime() ?? .zero
                 guard currentTime.isValid && !currentTime.seconds.isNaN else { return }
                 let currentDuration = currentTime.seconds
-                if let skips = skips, skips.opening.count == 2 {
+                guard let skips = list[self.selectedVideo]?.skips else { return }
+                if skips.opening.count == 2 {
                     if Int(currentDuration) >= skips.opening.first! && Int(currentDuration) <= skips.opening.first! + 10 {
                         withAnimation {
                             self.isAllowedToSkip = true
@@ -87,7 +86,6 @@ class VideoPlayerViewModel: ObservableObject {
                 
                 if !self.isSeeking {
                     self.progress = calculatedProgress
-                    self.lastDraggedProgress = self.progress
                 }
                 
                 if calculatedProgress == 1 {
@@ -101,7 +99,6 @@ class VideoPlayerViewModel: ObservableObject {
         player?.pause()
         player?.seek(to: .zero)
         progress = .zero
-        lastDraggedProgress = .zero
         isFinishedPlaying = false
         isPlaying = false
     }

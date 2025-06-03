@@ -13,7 +13,7 @@ struct VideoProgress: View {
     let onPressed: () -> Void
     
     var body: some View {
-        HStack(spacing: 15) {
+        HStack(alignment: .center, spacing: 15) {
             if let time = vm.player?.currentTime().seconds {
                 Text(String(Int(time).formatSeconds()))
                     .frame(width: 50)

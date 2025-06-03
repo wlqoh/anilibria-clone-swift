@@ -15,11 +15,9 @@ struct VideoPlayerView: View {
     @State var showSeriesPicker: Bool = false
     @State var showAdditionalSettings: Bool = false
     @State var orientation: UIInterfaceOrientationMask = .portrait
-
+    
     let name: String
     let articlePlayer: ArticlePlayer
-    
-    private var currentEpisode: Int { Int(vm.selectedVideo) ?? 1 }
     
     var body: some View {
         ZStack(alignment: .center) {
@@ -49,7 +47,7 @@ struct VideoPlayerView: View {
                         showSeriesPicker = true
                     }
                 } label: {
-                    Label("\(currentEpisode)", systemImage: "chevron.down")
+                    Label(vm.selectedVideo, systemImage: "chevron.down")
                 }
                 .secondaryPlaybackButtonStyle()
                 .opacity(vm.showPlayerControls ? 1 : 0)
@@ -169,7 +167,7 @@ struct VideoPlayerView: View {
         
         vm.player = AVPlayer(url: url)
         
-        vm.setupTimeObserver(skips: articlePlayer.list[vm.selectedVideo]?.skips)
+        vm.setupTimeObserver(list: articlePlayer.list)
     }
 }
 

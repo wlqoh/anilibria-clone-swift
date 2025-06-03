@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct VideoSeekerView: View {
     @ObservedObject var vm: VideoPlayerViewModel
@@ -22,46 +23,33 @@ struct VideoSeekerView: View {
                     .fill(.red)
                     .frame(width: max(seekerWidth * (vm.progress.isNaN ? 0 : vm.progress) , 0))
             }
-            .frame(width: seekerWidth, height: 3)
-            .overlay(alignment: .leading) {
-                Circle()
-                    .fill(.red)
-                    .frame(width: 15, height: 15)
-                    .scaleEffect(vm.showPlayerControls || isDragging ? 1 : 0.001, anchor: vm.progress * seekerWidth > 15 ? .trailing : .leading)
-                    .frame(width: 50, height: 50)
-                    .contentShape(Rectangle())
-                    .offset(x: seekerWidth * vm.progress)
-                    .gesture (
-                        DragGesture()
-                            .updating($isDragging, body: {_, out, _ in
-                                out = true
-                            })
-                            .onChanged({ value in
-                                let translationX: CGFloat = value.translation.width
-                                let calculatedProgress = (translationX / seekerWidth) + vm.lastDraggedProgress
-                                
-                                vm.progress = max(min(calculatedProgress, 1), 0)
-                                vm.isSeeking = true
-                            })
-                            .onEnded ({ value in
-                                
-                                vm.lastDraggedProgress = vm.progress
-                                
-                                if let currentPlayerItem = vm.player?.currentItem {
-                                    let totalDuration = currentPlayerItem.duration.seconds
-                                    
-                                    vm.player?.seek(to: .init(seconds: totalDuration * vm.progress, preferredTimescale: 1))
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                        vm.isSeeking = false
-                                    }
-                                }
-                            })
-                    )
-                    .offset(x: vm.progress * seekerWidth > 15 ? -15 : 0)
-                    .frame(width: 15, height: 15)
-            }
+            .frame(width: seekerWidth, height: 6)
+            .clipShape(Capsule())
+            .contentShape(Rectangle())
+            .gesture (
+                DragGesture(minimumDistance: 0)
+                    .updating($isDragging, body: {_, out, _ in
+                        out = true
+                    })
+                    .onChanged({ value in
+                        let locationX = value.location.x
+                        let calculatedProgress = min(max(locationX / seekerWidth, 0), 1)
+                        
+                        vm.progress = calculatedProgress
+                        vm.isSeeking = true
+                    })
+                    .onEnded ({ _ in
+                        if let duration = vm.player?.currentItem?.duration.seconds {
+                            let time = CMTime(seconds: duration * vm.progress, preferredTimescale: 600)
+                            vm.player?.seek(to: time)
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                vm.isSeeking = false
+                            }
+                        }
+                    })
+            )
         }
-        .frame(height: 1)
+        .frame(height: 4)
     }
 }
